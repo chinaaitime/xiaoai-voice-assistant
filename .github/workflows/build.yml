@@ -1,0 +1,30 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Unpack Project
+        run: |
+          if [ -f XiaoAiVoiceAssistant.zip ]; then
+            unzip -o XiaoAiVoiceAssistant.zip
+          fi
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.5'
+      - name: Build Debug APK
+        run: gradle assembleDebug --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: XiaoAiVoiceAssistant-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
